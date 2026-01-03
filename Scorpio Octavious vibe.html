@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scorpio Octavious Vibe | Official</title>
+    <style>
+        :root {
+            --black: #000000;
+            --deep-blue: #0a192f;
+            --vibrant-blue: #007bff;
+            --text: #e6f1ff;
+            --card-bg: #112240;
+            --accent: #64ffda;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--black); 
+            color: var(--text);
+            transition: background-color 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        /* Logic for Black to Blue transition */
+        body.logged-in { background-color: var(--deep-blue); }
+
+        header {
+            display: none;
+            padding: 15px 5%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--vibrant-blue);
+        }
+
+        .container { max-width: 500px; margin: auto; padding: 20px; padding-bottom: 100px; }
+        .view { display: none; }
+        .active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Login */
+        .auth-card { text-align: center; margin-top: 100px; }
+        
+        /* UI Components */
+        .card { background: var(--card-bg); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #233554; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid var(--vibrant-blue); background: #020c1b; color: #fff; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-primary { background: var(--vibrant-blue); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--vibrant-blue); color: var(--vibrant-blue); }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; background: #020c1b;
+            display: none; justify-content: space-around; padding: 12px 0;
+            border-top: 2px solid var(--vibrant-blue);
+        }
+        .nav-item { background: none; border: none; color: white; font-size: 0.7rem; cursor: pointer; text-align: center; }
+
+        /* AI Chat */
+        #chat-window { height: 250px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--vibrant-blue); }
+        .ai-msg { color: var(--accent); margin-bottom: 8px; font-style: italic; }
+        .user-msg { color: #fff; text-align: right; margin-bottom: 8px; }
+
+        /* Reels */
+        .reel-video { width: 100%; border-radius: 10px; background: #000; aspect-ratio: 9/16; object-fit: cover; }
+        .reel-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.85rem; }
+
+        /* Profile */
+        #profile-pic-container { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--vibrant-blue); margin: 0 auto 15px; overflow: hidden; background: #233554; cursor: pointer; }
+        #profile-pic-container img { width: 100%; height: 100%; object-fit: cover; }
+    </style>
+</head>
+<body id="mainBody">
+
+<header id="appHeader">
+    <div style="font-weight: bold; color: var(--vibrant-blue); font-size: 1.2rem;">🦂 SCORPIO</div>
+    <div style="flex-grow: 1; margin: 0 15px;"><input type="text" placeholder="Search artists..." style="margin:0; padding: 8px; border-radius: 20px;"></div>
+</header>
+
+<div class="container">
+    
+    <div id="view-auth" class="view active">
+        <div class="auth-card">
+            <h1 style="color: var(--vibrant-blue);">Scorpio Vibe</h1>
+            <p>Master Edition | Octavious AI</p>
+            <div class="card">
+                <input type="email" id="email" placeholder="Email Address" value="">
+                <input type="password" id="pass" placeholder="Password" value="">
+                <button class="btn btn-primary" onclick="login()">Sign In to Vibe</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-home" class="view">
+        <div id="reelsContainer"></div>
+    </div>
+
+    <div id="view-upload" class="view">
+        <h2 style="color: var(--vibrant-blue);">Post Your Vibe</h2>
+        <div class="card">
+            <input type="text" id="reelTitle" placeholder="Give your reel a title...">
+            <input type="text" id="reelUrl" placeholder="Direct Video URL (MP4 Link)">
+            <button class="btn btn-primary" onclick="postReel()">Post Now</button>
+        </div>
+    </div>
+
+    <div id="view-ai" class="view">
+        <h2 style="color: var(--accent);">Chat with Octavious</h2>
+        <div class="card">
+            <div id="chat-window">
+                <div class="ai-msg">Octavious: Welcome back! Ready to conquer the day? I'm here for you.</div>
+            </div>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="aiInput" placeholder="Message Octavious...">
+                <button class="btn btn-primary" style="width: auto; margin:0;" onclick="askAI()">Ask</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-wallet" class="view">
+        <h2 style="color: var(--vibrant-blue);">Creator Wallet</h2>
+        <div class="card" style="text-align: center; background: linear-gradient(135deg, #007bff, #0a192f);">
+            <p style="margin:0; font-size: 0.9rem; opacity: 0.8;">Total Balance</p>
+            <h1 id="balanceDisplay" style="font-size: 3.5rem; margin: 10px 0;">$0.00</h1>
+            <small>https://wallet.scorpio-octavious-vibe.com</small>
+        </div>
+        <div class="card">
+            <h3>Withdraw Funds</h3>
+            <select id="payoutMethod">
+                <option>PayPal</option>
+                <option>Bitcoin (BTC)</option>
+            </select>
+            <input type="text" placeholder="Wallet Address or PayPal Email">
+            <button class="btn btn-primary" onclick="alert('Transaction broadcasted to blockchain. Pending verification.')">Withdraw Now</button>
+        </div>
+    </div>
+
+    <div id="view-profile" class="view">
+        <div class="card" style="text-align: center;">
+            <div id="profile-pic-container" onclick="document.getElementById('picInput').click()">
+                <img id="userImg" src="https://via.placeholder.com/100" alt="Profile">
+            </div>
+            <input type="file" id="picInput" style="display:none" onchange="changePic(this)">
+            <h2 id="userNameDisplay">Scorpio_User</h2>
+            <div style="display:flex; justify-content: space-around; margin: 15px 0;">
+                <div><strong>1.2k</strong><br><small>Friends</small></div>
+                <div><strong>8.5k</strong><br><small>Followers</small></div>
+            </div>
+            <input type="text" id="newNickname" placeholder="New Nickname">
+            <button class="btn btn-outline" onclick="updateProfile()">Save Nickname</button>
+            
+            <hr style="border: 0.5px solid #233554; margin: 25px 0;">
+            
+            <h3 style="text-align:left;">Vibe Marketing</h3>
+            <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:10px;">
+                <span>Gold Badge 🛡️</span>
+                <button class="btn btn-primary" style="width:auto; margin:0;" onclick="buy('Gold Badge', 4.99)">$4.99</button>
+            </div>
+            <div style="display:flex; justify-content: space-between; align-items:center;">
+                <span>Pro Filter Pack ✨</span>
+                <button class="btn btn-primary" style="width:auto; margin:0;" onclick="buy('Pro Filter', 2.45)">$2.45</button>
+            </div>
+            <p style="font-size: 0.7rem; color: #8892b0; margin-top: 15px;">* No refunds after digital delivery.</p>
+            
+            <button class="btn" style="background: #f43f5e; color: white; margin-top: 30px;" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+</div>
+
+<nav class="bottom-nav" id="botNav">
+    <button class="nav-item" onclick="showPage('home')">🏠<br>Home</button>
+    <button class="nav-item" onclick="showPage('upload')">➕<br>Post</button>
+    <button class="nav-item" onclick="showPage('ai')">🤖<br>AI</button>
+    <button class="nav-item" onclick="showPage('wallet')">💰<br>Wallet</button>
+    <button class="nav-item" onclick="showPage('profile')">👤<br>Profile</button>
+</nav>
+
+<script>
+    // LOAD SAVED DATA
+    let db = JSON.parse(localStorage.getItem('scorpio_vibe_data')) || {
+        isLoggedIn: true,
+        balance: 0.00,
+        nickname: "Scorpio_User",
+        profilePic: "https://via.placeholder.com/100",
+        reels: [
+            {title: "City Vibe", url: "https://www.w3schools.com/html/mov_bbb.mp4", views: 100, likes: 50}
+        ]
+    };
+
+    function save() { localStorage.setItem('scorpio_vibe_data', JSON.stringify(db)); }
+
+    // AUTH
+    function login() {
+        db.isLoggedIn = true;
+        save();
+        enterApp();
+    }
+
+    function logout() {
+        db.isLoggedIn = true;
+        save();
+        location.reload();
+    }
+
+    function enterApp() {
+        document.getElementById('mainBody').classList.add('logged-in');
+        document.getElementById('view-auth').classList.remove('active');
+        document.getElementById('appHeader').style.display = 'flex';
+        document.getElementById('botNav').style.display = 'flex';
+        showPage('home');
+        renderUI();
+    }
+
+    // NAVIGATION
+    function showPage(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById('view-' + id).classList.add('active');
+    }
+
+    // REELS & MONEY
+    function postReel() {
+        const title = document.getElementById('reelTitle').value;
+        const url = document.getElementById('reelUrl').value;
+        if(title && url) {
+            db.reels.unshift({ title, url, views: 0, likes: 0 });
+            save();
+            showPage('home');
+            renderUI();
+            document.getElementById('reelTitle').value = "";
+            document.getElementById('reelUrl').value = "";
+        }
+    }
+
+    function renderUI() {
+        // Earnings: $5 per 100 views, $3 per 100 likes
+        let total = 0;
+        db.reels.forEach(r => {
+            total += (r.views * 0.05) + (r.likes * 0.03);
+        });
+        db.balance = total;
+        
+        document.getElementById('balanceDisplay').innerText = `$${db.balance.toFixed(2)}`;
+        document.getElementById('userNameDisplay').innerText = db.nickname;
+        document.getElementById('userImg').src = db.profilePic;
+
+        const container = document.getElementById('reelsContainer');
+        container.innerHTML = "";
+        db.reels.forEach((r, i) => {
+            container.innerHTML += `
+                <div class="card">
+                    <h4 style="margin-top:0;">${r.title}</h4>
+                    <video class="reel-video" src="${r.url}" controls></video>
+                    <div class="reel-meta">
+                        <span>👁 ${r.views} Views</span>
+                        <button onclick="likeReel(${i})" style="background:none; border:none; color:var(--accent); cursor:pointer;">❤️ ${r.likes} Likes</button>
+                        <button onclick="share()" style="background:none; border:none; color:var(--vibrant-blue); cursor:pointer;">Share</button>
+                    </div>
+                </div>
+            `;
+        });
+        save();
+    }
+
+    function likeReel(i) {
+        db.reels[i].likes += 1;
+        renderUI();
+    }
+
+    function share() {
+        prompt("Copy Reel Link:", "https://scorpio-octavious-vibe.com/share/" + Math.random().toString(36).substr(7));
+    }
+
+    // AI
+    function askAI() {
+        const input = document.getElementById('aiInput');
+        const box = document.getElementById('chat-window');
+        if(!input.value) return;
+
+        box.innerHTML += `<div class="user-msg">${input.value}</div>`;
+        const replies = ["You're a legend in the making!", "Scorpio energy is high today!", "Keep posting, your balance is growing!", "Make it a great day!"];
+        const reply = replies[Math.floor(Math.random() * replies.length)];
+
+        setTimeout(() => {
+            box.innerHTML += `<div class="ai-msg">Octavious: ${reply}</div>`;
+            box.scrollTop = box.scrollHeight;
+        }, 500);
+        input.value = "";
+    }
+
+    // PROFILE
+    function updateProfile() {
+        const nick = document.getElementById('newNickname').value;
+        if(nick) { db.nickname = nick; save(); renderUI(); alert("Nickname Updated!"); }
+    }
+
+    function changePic(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                db.profilePic = e.target.result;
+                renderUI();
+                save();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function buy(item, price) {
+        alert(`Connecting to Wallet... Redirecting to pay $${price} for ${item}. (No Refunds)`);
+    }
+
+    // STARTUP
+    if(db.isLoggedIn) {
+        enterApp();
+    }
+</script>
+</body>
+</html>
